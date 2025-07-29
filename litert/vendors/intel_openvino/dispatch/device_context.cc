@@ -19,8 +19,8 @@
 #endif  // __ANDROID__
 
 #include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
+// #include <sys/socket.h>
+// #include <unistd.h>
 
 #include <openvino/runtime/intel_npu/level_zero/level_zero.hpp>
 #include <openvino/runtime/remote_context.hpp>

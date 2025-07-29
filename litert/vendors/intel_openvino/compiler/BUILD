@@ -143,6 +143,7 @@ litert_test(
     target_compatible_with = select({
         "@platforms//os:android": [],
         "@platforms//os:linux": [],
+        "@platforms//os:windows": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
     ungrte = True,

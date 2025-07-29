@@ -185,7 +185,7 @@ class ErrorStatusBuilder {
 
   static constexpr bool IsError(const litert::Unexpected&) { return true; }
 
-  static constexpr bool IsError(const absl::Status& s) { return !s.ok(); }
+  // static constexpr bool IsError(const absl::Status& s) { return !s.ok(); }
 
   template <class T>
   static constexpr bool IsError(const absl::StatusOr<T>& s) {

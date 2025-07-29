@@ -16,7 +16,7 @@
 #ifndef ODML_LITERT_LITERT_VENDORS_OPENVINO_DISPATCH_LITERT_DISPATCH_DEVICE_CONTEXT_H_
 #define ODML_LITERT_LITERT_VENDORS_OPENVINO_DISPATCH_LITERT_DISPATCH_DEVICE_CONTEXT_H_
 
-#include <sys/mman.h>
+// #include <sys/mman.h>
 
 #include "openvino/runtime/core.hpp"
 #include "openvino/runtime/intel_npu/level_zero/level_zero.hpp"

@@ -14,7 +14,7 @@
 
 #include "litert/tools/dump.h"
 
-#include <dlfcn.h>
+// #include <dlfcn.h>
 
 #ifndef __ANDROID__
 #if __has_include(<link.h>)

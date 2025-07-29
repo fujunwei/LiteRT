@@ -87,7 +87,7 @@ class GraphIteratorDelegate
   /// If there is no query for specific sub-graph iterator shouldn't be created
   /// idx should be in range 0..get_subgraph_size()-1
   std::shared_ptr<ov::frontend::tensorflow_lite::GraphIterator> get_subgraph(
-      size_t idx) const override {};
+      size_t idx) const override { return nullptr;};
 
  private:
   size_t node_index_ = 0;

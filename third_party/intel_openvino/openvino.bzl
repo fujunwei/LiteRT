@@ -13,7 +13,9 @@
 # limitations under the License.
 """Workspace definition for Openvino."""
 
+print("+++++++1")
 def _openvino_native_impl(repository_ctx):
+    print("+++++++555www")
     openvino_native_dir = repository_ctx.os.environ.get("OPENVINO_NATIVE_DIR")
     if openvino_native_dir:
         repository_ctx.symlink(openvino_native_dir, "openvino")
@@ -36,3 +38,4 @@ openvino_configure = repository_rule(
         ),
     },
 )
+print("+++++++2")
