@@ -18,5 +18,8 @@ cc_library(
     includes = [
         "openvino/runtime/include",
     ],
+    linkopts = [
+        "/FORCE:MULTIPLE",  # 强制允许重复符号
+    ],
     visibility = ["//visibility:public"],
 )

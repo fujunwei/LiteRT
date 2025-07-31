@@ -113,6 +113,7 @@ _SYS_ELF_INTERPRETER_LINKOPT_X86_64 = make_linkopt("--dynamic-linker={}".format(
 
 _EXPORT_LRT_ONLY_SCRIPT_LINUX = "//litert/build_common:export_litert_only_linux.lds"
 _EXPORT_LRT_ONLY_SCRIPT_DARWIN = "//litert/build_common:export_litert_only_darwin.lds"
+_EXPORT_LRT_ONLY_SCRIPT_WINDOWS = "//litert/build_common:export_litert_only_windows.lds"
 _EXPORT_LRT_ONLY_LINKOPT_LINUX = make_linkopt("--version-script=$(location {})".format(_EXPORT_LRT_ONLY_SCRIPT_LINUX))
 _EXPORT_LRT_ONLY_LINKOPT_DARWIN = make_linkopt("-exported_symbols_list,$(location {})".format(_EXPORT_LRT_ONLY_SCRIPT_DARWIN))
 
@@ -122,6 +123,7 @@ def symbol_opts():
         "@org_tensorflow//tensorflow:debug": [],
         "@org_tensorflow//tensorflow:macos": [],
         "@org_tensorflow//tensorflow:ios": [],
+        "@org_tensorflow//tensorflow:windows": [],
         "//conditions:default": [
             # Omit symbol table, for all non debug builds
             "-Wl,-s",
@@ -135,6 +137,7 @@ def export_lrt_only_script():
         "@org_tensorflow//tensorflow:chromiumos": [_EXPORT_LRT_ONLY_SCRIPT_LINUX],
         "@org_tensorflow//tensorflow:macos": [_EXPORT_LRT_ONLY_SCRIPT_DARWIN],
         "@org_tensorflow//tensorflow:ios": [_EXPORT_LRT_ONLY_SCRIPT_DARWIN],
+        "@org_tensorflow//tensorflow:windows": [_EXPORT_LRT_ONLY_SCRIPT_WINDOWS],
         "//conditions:default": [],
     })
 
@@ -145,11 +148,13 @@ def export_lrt_only_linkopt():
         "@org_tensorflow//tensorflow:chromiumos": [_EXPORT_LRT_ONLY_LINKOPT_LINUX],
         "@org_tensorflow//tensorflow:macos": [_EXPORT_LRT_ONLY_LINKOPT_DARWIN],
         "@org_tensorflow//tensorflow:ios": [_EXPORT_LRT_ONLY_LINKOPT_DARWIN],
+        "@org_tensorflow//tensorflow:windows": [],
         "//conditions:default": [],
     }) + symbol_opts()
 
 _EXPORT_LRT_RUNTIME_ONLY_SCRIPT_LINUX = "//litert/build_common:export_litert_runtime_only_linux.lds"
 _EXPORT_LRT_RUNTIME_ONLY_SCRIPT_DARWIN = "//litert/build_common:export_litert_runtime_only_darwin.lds"
+_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_WINDOWS = "//litert/build_common:export_litert_runtime_only_windows.lds"
 _EXPORT_LRT_RUNTIME_ONLY_LINKOPT_LINUX = make_linkopt("--version-script=$(location {})".format(_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_LINUX))
 _EXPORT_LRT_RUNTIME_ONLY_LINKOPT_DARWIN = make_linkopt("-exported_symbols_list,$(location {})".format(_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_DARWIN))
 
@@ -167,6 +172,7 @@ def export_lrt_runtime_only_script():
         "@org_tensorflow//tensorflow:chromiumos": [_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_LINUX],
         "@org_tensorflow//tensorflow:macos": [_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_DARWIN],
         "@org_tensorflow//tensorflow:ios": [_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_DARWIN],
+        "@org_tensorflow//tensorflow:windows": [_EXPORT_LRT_RUNTIME_ONLY_SCRIPT_WINDOWS],
         "//conditions:default": [],
     })
 
@@ -180,11 +186,13 @@ def export_lrt_runtime_only_linkopt():
         "@org_tensorflow//tensorflow:chromiumos": _EXPORT_LRT_COMMON_LINKOPTS_LINUX + [_EXPORT_LRT_RUNTIME_ONLY_LINKOPT_LINUX],
         "@org_tensorflow//tensorflow:macos": [_EXPORT_LRT_RUNTIME_ONLY_LINKOPT_DARWIN],
         "@org_tensorflow//tensorflow:ios": [_EXPORT_LRT_RUNTIME_ONLY_LINKOPT_DARWIN],
+        "@org_tensorflow//tensorflow:windows": [],
         "//conditions:default": [],
     }) + symbol_opts()
 
 _EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_LINUX = "//litert/build_common:export_litert_tflite_runtime_linux.lds"
 _EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_DARWIN = "//litert/build_common:export_litert_tflite_runtime_darwin.lds"
+_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_WINDOWS = "//litert/build_common:export_litert_tflite_runtime_windows.lds"
 _EXPORT_LRT_TFLITE_RUNTIME_LINKOPT_LINUX = make_linkopt("--version-script=$(location {})".format(_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_LINUX))
 _EXPORT_LRT_TFLITE_RUNTIME_LINKOPT_DARWIN = make_linkopt("-exported_symbols_list,$(location {})".format(_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_DARWIN))
 
@@ -195,6 +203,7 @@ def export_lrt_tflite_runtime_script():
         "@org_tensorflow//tensorflow:chromiumos": [_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_LINUX],
         "@org_tensorflow//tensorflow:macos": [_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_DARWIN],
         "@org_tensorflow//tensorflow:ios": [_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_DARWIN],
+        "@org_tensorflow//tensorflow:windows": [_EXPORT_LRT_TFLITE_RUNTIME_SCRIPT_WINDOWS],
         "//conditions:default": [],
     })
 
@@ -208,6 +217,7 @@ def export_lrt_tflite_runtime_linkopt():
         "@org_tensorflow//tensorflow:chromiumos": _EXPORT_LRT_COMMON_LINKOPTS_LINUX + [_EXPORT_LRT_TFLITE_RUNTIME_LINKOPT_LINUX],
         "@org_tensorflow//tensorflow:macos": [_EXPORT_LRT_TFLITE_RUNTIME_LINKOPT_DARWIN],
         "@org_tensorflow//tensorflow:ios": [_EXPORT_LRT_TFLITE_RUNTIME_LINKOPT_DARWIN],
+        "@org_tensorflow//tensorflow:windows": [],
         "//conditions:default": [],
     }) + symbol_opts()
 
@@ -243,6 +253,7 @@ def _litert_base(
             linkopts = selects.with_or({
                 ("//conditions:default", "//litert/build_common:linux_x86_64_grte"): _DEFAULT_LINK_OPTS,
                 "@org_tensorflow//tensorflow:macos": [],
+                "@org_tensorflow//tensorflow:windows": [],
                 "//litert/build_common:linux_x86_64_ungrte": _UNGRTE_LINK_OPTS + _DEFAULT_LINK_OPTS,
             }),
         )
@@ -343,10 +354,6 @@ def litert_dynamic_lib(
       ungrte: Whether to link against system libraries ("ungrte").
       **cc_lib_kwargs: Keyword arguments to pass to the underlying rule.
     """
-    if not _valid_shared_lib_name(shared_lib_name):
-        fail("\"shared_lib_name\" must end with \"_so\"")
-    if not _valid_so_name(so_name):
-        fail("\"so_name\" must be \"libLiteRt*.so\"")
 
     lib_name = name
     cc_lib_kwargs["name"] = lib_name
@@ -369,6 +376,39 @@ def litert_dynamic_lib(
         user_link_flags = export_lrt_only_linkopt()
         additional_linker_inputs = export_lrt_only_script()
 
+    print("+++++++++++" + shared_lib_name);
+    print("+++++++++++", cc_lib_kwargs.get("srcs", []));
+    print("++++++dll ", cc_lib_kwargs)
+    
+    dll_name = name + ".dll"
+    import_lib_name = name + "_import_lib"
+    import_target_name = name + "_dll_import"
+
+    # Build the shared library
+    native.cc_binary(
+        name = dll_name,
+        srcs = cc_lib_kwargs.get("srcs", []) + cc_lib_kwargs.get("hdrs", []),
+        deps = cc_lib_kwargs.get("deps", []),
+        linkshared = 1,
+        #**cc_lib_kwargs
+    )
+
+     # Get the import library for the dll
+    native.filegroup(
+        name = import_lib_name,
+        srcs = [":" + dll_name],
+        output_group = "interface_library",
+    )
+
+    # Because we cannot directly depend on cc_binary from other cc rules in deps attribute,
+    # we use cc_import as a bridge to depend on the dll.
+    native.cc_import(
+        name = import_target_name,
+        interface_library = ":" + import_lib_name,
+        shared_library = ":" + dll_name,
+    )
+    print("++++++++++++++cc_import")
+    
     native.cc_shared_library(
         name = shared_lib_name,
         shared_lib_name = so_name,
@@ -382,6 +422,10 @@ def litert_dynamic_lib(
             # linker flags to allow unresolved symbols only of a given pattern like LiteRt*.
             "//litert/c:resolve_symbols_in_exec": ["-no_undefined"],
             "//conditions:default": [],
+        }),
+        win_def_file = select({
+            "@org_tensorflow//tensorflow:windows": "//litert/build_common/math_lib.def",
+            "//conditions:default": None,
         }),
     )
 
@@ -401,6 +445,43 @@ def litert_dynamic_lib(
 #     },
 # )
 # copybara:uncomment_end
+
+def windows_dll_library(
+        name,
+        srcs = [],
+        deps = [],
+        hdrs = [],
+        visibility = None,
+        **cc_lib_kwargs):
+    """A simple windows_dll_library rule for builing a DLL Windows."""
+    dll_name = name + ".dll"
+    import_lib_name = name + "_import_lib"
+    import_target_name = name + "_dll_import"
+
+    print("++++++dll ", cc_lib_kwargs)
+    # Build the shared library
+    native.cc_binary(
+        name = dll_name,
+        srcs = srcs + hdrs,
+        deps = deps,
+        linkshared = 1,
+        **cc_lib_kwargs
+    )
+
+    # Get the import library for the dll
+    native.filegroup(
+        name = import_lib_name,
+        srcs = [":" + dll_name],
+        output_group = "interface_library",
+    )
+
+    # Because we cannot directly depend on cc_binary from other cc rules in deps attribute,
+    # we use cc_import as a bridge to depend on the dll.
+    native.cc_import(
+        name = import_target_name,
+        interface_library = ":" + import_lib_name,
+        shared_library = ":" + dll_name,
+    )
 
 def copy_file(name, src, target, visibility = None):
     input_path = "$(location %s)" % src

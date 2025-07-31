@@ -27,6 +27,12 @@
 extern "C" {
 #endif  // __cplusplus
 
+//  #ifdef BUILD_MY_DLL // Define this when compiling the DLL
+    #define MY_DLL_EXPORT __declspec(dllexport)
+    // #else
+    // #define MY_DLL_EXPORT __declspec(dllimport)
+    // #endif
+
 // /////////////////////////////////////////////////////////////////////////////
 // Basic Execution API
 // /////////////////////////////////////////////////////////////////////////////
@@ -62,27 +68,27 @@ typedef struct LiteRtMemBuffer {
 //
 // This function should be called before calling any other Dispatch API
 // functions.
-LiteRtStatus LiteRtDispatchInitialize(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchInitialize(
     LiteRtEnvironmentOptions environment_options, LiteRtOptions options);
 
 // Return the version of the Dispatch API runtime.
-LiteRtStatus LiteRtDispatchGetApiVersion(LiteRtApiVersion* api_version);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetApiVersion(LiteRtApiVersion* api_version);
 
 // Return the vendor id of the Dispatch API runtime.
 //
 // This function returns a pointer to a statically allocated string that is the
 // ID of vendor providing the Dispatch API runtime.
-LiteRtStatus LiteRtDispatchGetVendorId(const char** vendor_id);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetVendorId(const char** vendor_id);
 
 // Return the build ID of the Dispatch API runtime.
 //
 // This function returns a pointer to a statically allocated string that is the
 // ID of the Dispatch API runtime build.
-LiteRtStatus LiteRtDispatchGetBuildId(const char** build_id);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetBuildId(const char** build_id);
 
 // Return the capabilities supported by the Dispatch API runtime as a set of the
 // values specified in LiteRtDispatchCapabilities.
-LiteRtStatus LiteRtDispatchGetCapabilities(int* capabilities);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetCapabilities(int* capabilities);
 
 // Create a `LiteRtDispatchDeviceContext` object.
 //
@@ -90,20 +96,20 @@ LiteRtStatus LiteRtDispatchGetCapabilities(int* capabilities);
 // the memory associated with the context and should call
 // LiteRtDispatchDeviceContextDestroy() to release it. Return NULL in case of
 // error.
-LiteRtStatus LiteRtDispatchDeviceContextCreate(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchDeviceContextCreate(
     LiteRtDispatchDeviceContext* device_context);
 
 // Release a `LiteRtDispatchDeviceContext` object.
 //
 // The given context should be release only after releasing all associated
 // objects.
-LiteRtStatus LiteRtDispatchDeviceContextDestroy(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchDeviceContextDestroy(
     LiteRtDispatchDeviceContext device_context);
 
 // Given a tensor type for an invocation context input, obtain the attributes
 // the HW requires for the associated tensor buffer. The returned
 // `tensor_buffer_requirements` object is owned by the caller.
-LiteRtStatus LiteRtDispatchGetInputRequirements(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetInputRequirements(
     LiteRtDispatchInvocationContext invocation_context, int input_index,
     const LiteRtRankedTensorType* tensor_type,
     LiteRtTensorBufferRequirements* tensor_buffer_requirements);
@@ -111,7 +117,7 @@ LiteRtStatus LiteRtDispatchGetInputRequirements(
 // Given a tensor type for an invocation context output, obtain the attributes
 // the HW requires for the associated tensor buffer. The returned
 // `tensor_buffer_requirements` object is owned by the caller.
-LiteRtStatus LiteRtDispatchGetOutputRequirements(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetOutputRequirements(
     LiteRtDispatchInvocationContext invocation_context, int output_index,
     const LiteRtRankedTensorType* tensor_type,
     LiteRtTensorBufferRequirements* tensor_buffer_requirements);
@@ -119,7 +125,7 @@ LiteRtStatus LiteRtDispatchGetOutputRequirements(
 // Registers a buffer with the given device context.
 // Note: The memory backing the buffer should be valid until
 // `LiteRtDispatchUnregisterTensorBuffer` is called.
-LiteRtStatus LiteRtDispatchRegisterTensorBuffer(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchRegisterTensorBuffer(
     LiteRtDispatchDeviceContext device_context,
     LiteRtTensorBuffer tensor_buffer,
     LiteRtTensorBufferHandle* tensor_buffer_handle);
@@ -129,67 +135,67 @@ LiteRtStatus LiteRtDispatchRegisterTensorBuffer(
 // Note: The registered `LiteRtTensorBufferHandle` is supposed to be
 // unregistered with this function before the associated `ThrContext` is deleted
 // by calling `LiteRtDispatchDeviceContextDestroy`.
-LiteRtStatus LiteRtDispatchUnregisterTensorBuffer(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchUnregisterTensorBuffer(
     LiteRtDispatchDeviceContext device_context,
     LiteRtTensorBufferHandle tensor_buffer_handle);
 
 // Create an invocation context to run a given function from a given
 // executable. Parameter `function_name` is required if the provided executable
 // includes multiple functions.
-LiteRtStatus LiteRtDispatchInvocationContextCreate(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchInvocationContextCreate(
     LiteRtDispatchDeviceContext device_context,
     LiteRtDispatchExecutableType exec_type,
     const LiteRtMemBuffer* exec_bytecode_buffer, const char* function_name,
     int num_inputs, int num_outputs,
     LiteRtDispatchInvocationContext* invocation_context);
 
-LiteRtStatus LiteRtDispatchInvocationContextDestroy(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchInvocationContextDestroy(
     LiteRtDispatchInvocationContext invocation_context);
 
-LiteRtStatus LiteRtDispatchAttachInput(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAttachInput(
     LiteRtDispatchInvocationContext invocation_context, int graph_input_index,
     LiteRtTensorBufferHandle tensor_buffer_handle);
 
-LiteRtStatus LiteRtDispatchAttachOutput(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAttachOutput(
     LiteRtDispatchInvocationContext invocation_context, int graph_output_index,
     LiteRtTensorBufferHandle tensor_buffer_handle);
 
-LiteRtStatus LiteRtDispatchDetachInput(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchDetachInput(
     LiteRtDispatchInvocationContext invocation_context, int graph_input_index,
     LiteRtTensorBufferHandle tensor_buffer_handle);
 
-LiteRtStatus LiteRtDispatchDetachOutput(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchDetachOutput(
     LiteRtDispatchInvocationContext invocation_context, int graph_output_index,
     LiteRtTensorBufferHandle tensor_buffer_handle);
 
-LiteRtStatus LiteRtDispatchInvoke(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchInvoke(
     LiteRtDispatchInvocationContext invocation_context);
 
 // Start collection of HW-specific metrics at a specific level of detail (>= 0).
-LiteRtStatus LiteRtDispatchStartMetricsCollection(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchStartMetricsCollection(
     LiteRtDispatchInvocationContext invocation_context, int detail_level);
 
 // Stop collection of HW-specific metrics and report the collected
 // metrics. Note: The caller is responsible for deallocating the returned
 // metrics by calling `LiteRtDispatchDestroyMetrics`.
-LiteRtStatus LiteRtDispatchStopMetricsCollection(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchStopMetricsCollection(
     LiteRtDispatchInvocationContext invocation_context,
     LiteRtDispatchMetrics* metrics);
 
-LiteRtStatus LiteRtDispatchGetNumMetrics(LiteRtDispatchMetrics metrics,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetNumMetrics(LiteRtDispatchMetrics metrics,
                                          int* num_metrics);
 
 // Fetch a specific metric. The runtime owns the returned object.
-LiteRtStatus LiteRtDispatchGetMetric(LiteRtDispatchMetrics metrics,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetMetric(LiteRtDispatchMetrics metrics,
                                      int metric_index, LiteRtMetric* metric);
 
-LiteRtStatus LiteRtDispatchDestroyMetrics(LiteRtDispatchMetrics metrics);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchDestroyMetrics(LiteRtDispatchMetrics metrics);
 
 // /////////////////////////////////////////////////////////////////////////////
 // Async Execution API
 // /////////////////////////////////////////////////////////////////////////////
 
-LiteRtStatus LiteRtDispatchAttachInputEvent(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAttachInputEvent(
     LiteRtDispatchInvocationContext invocation_context, int graph_input_index,
     LiteRtEvent input_event);
 
@@ -197,7 +203,7 @@ LiteRtStatus LiteRtDispatchAttachInputEvent(
 // large output_events array, where this function will return newly created
 // LiteRtEvents, one for each invocation context output. The caller takes
 // ownership for the LiteRtEvents returned in output_events.
-LiteRtStatus LiteRtDispatchInvokeAsync(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchInvokeAsync(
     LiteRtDispatchInvocationContext invocation_context, int num_output_events,
     LiteRtEvent* output_events);
 
@@ -219,73 +225,73 @@ typedef enum LiteRtDispatchNodeType {
   kLiteRtDispatchNodeTypeNpu = 2,  // Can execute only ML models
 } LiteRtDispatchNodeType;
 
-LiteRtStatus LiteRtDispatchGraphCreate(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGraphCreate(
     LiteRtDispatchDeviceContext device_context, LiteRtDispatchGraph** graph);
 
-LiteRtStatus LiteRtDispatchGraphDestroy(LiteRtDispatchGraph* graph);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGraphDestroy(LiteRtDispatchGraph* graph);
 
 // Add a compute node to a given graph. Parameter node_id should be unique to
 // the graph.
-LiteRtStatus LiteRtDispatchAddNode(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAddNode(LiteRtDispatchGraph* graph,
                                    LiteRtDispatchNodeId node_id,
                                    LiteRtDispatchNodeType node_type);
 
 // Add an edge a given graph. Parameter edge_id should be unique to the graph.
-LiteRtStatus LiteRtDispatchAddEdge(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAddEdge(LiteRtDispatchGraph* graph,
                                    LiteRtDispatchEdgeId edge_id);
 
 // Connect a given node's input.
-LiteRtStatus LiteRtDispatchConnectNodeInput(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchConnectNodeInput(LiteRtDispatchGraph* graph,
                                             LiteRtDispatchNodeId node_id,
                                             int input_index,
                                             LiteRtDispatchEdgeId edge_id);
 
 // Connect a given node's output.
-LiteRtStatus LiteRtDispatchConnectNodeOutput(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchConnectNodeOutput(LiteRtDispatchGraph* graph,
                                              LiteRtDispatchNodeId node_id,
                                              int output_index,
                                              LiteRtDispatchEdgeId edge_id);
 
 // Connect a given graph's input.
-LiteRtStatus LiteRtDispatchConnectGraphInput(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchConnectGraphInput(LiteRtDispatchGraph* graph,
                                              int input_index,
                                              LiteRtDispatchEdgeId edge_id);
 
 // Connect a given graph's output.
-LiteRtStatus LiteRtDispatchConnectGraphOutput(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchConnectGraphOutput(LiteRtDispatchGraph* graph,
                                               int output_index,
                                               LiteRtDispatchEdgeId edge_id);
 
-LiteRtStatus LiteRtDispatchLoadExecutable(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchLoadExecutable(
     LiteRtDispatchDeviceContext device_context,
     LiteRtDispatchExecutableType type, const LiteRtMemBuffer* bytecode_buffer,
     LiteRtDispatchExecutableHandle* exec_handle);
 
-LiteRtStatus LiteRtDispatchUnloadExecutable(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchUnloadExecutable(
     LiteRtDispatchDeviceContext device_context,
     LiteRtDispatchExecutableHandle exec_handle);
 
 // Assign an executable function to a graph node. Parameter `function_name` is
 // mandatory if the given executable includes multiple functions.
-LiteRtStatus LiteRtDispatchAssignNodeFunction(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAssignNodeFunction(
     LiteRtDispatchGraph* graph, LiteRtDispatchNodeId node_id,
     LiteRtDispatchExecutableHandle exec_handle, const char* function_name);
 
 // Add an annotation to an entire graph.
-LiteRtStatus LiteRtDispatchAnnotateGraph(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAnnotateGraph(LiteRtDispatchGraph* graph,
                                          const char* key, const char* value);
 
 // Add an annotation to a specified node.
-LiteRtStatus LiteRtDispatchAnnotateNode(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAnnotateNode(LiteRtDispatchGraph* graph,
                                         LiteRtDispatchNodeId node_id,
                                         const char* key, const char* value);
 
 // Add an annotation to a specified edge.
-LiteRtStatus LiteRtDispatchAnnotateEdge(LiteRtDispatchGraph* graph,
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchAnnotateEdge(LiteRtDispatchGraph* graph,
                                         LiteRtDispatchEdgeId edge_id,
                                         const char* key, const char* value);
 
-LiteRtStatus LiteRtDispatchInvocationContextCreateFromGraph(
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchInvocationContextCreateFromGraph(
     LiteRtDispatchDeviceContext device_context, LiteRtDispatchGraph* graph,
     LiteRtDispatchInvocationContext* invocation_context);
 

@@ -70,7 +70,7 @@ std::string Dirname(const std::string& path) {
 LiteRtStatus FindLiteRtCompilerPluginSharedLibs(
     absl::string_view search_path, std::vector<std::string>& results) {
   const std::string lib_pattern =
-      absl::StrCat(ToWindowsLibName(kLiteRtSharedLibPrefix), "CompilerPlugin");
+      absl::StrCat(kLiteRtSharedLibPrefix, "CompilerPlugin");
   return FindLiteRtSharedLibsHelper(std::string(search_path), lib_pattern,
                                     /*full_match=*/false, results);
 }
@@ -78,7 +78,7 @@ LiteRtStatus FindLiteRtCompilerPluginSharedLibs(
 LiteRtStatus FindLiteRtDispatchSharedLibs(absl::string_view search_path,
                                           std::vector<std::string>& results) {
   const std::string lib_pattern =
-      absl::StrCat(ToWindowsLibName(kLiteRtSharedLibPrefix), "Dispatch");
+      absl::StrCat(kLiteRtSharedLibPrefix, "Dispatch");
   return FindLiteRtSharedLibsHelper(std::string(search_path), lib_pattern,
                                     /*full_match=*/false, results);
 }

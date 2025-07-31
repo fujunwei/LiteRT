@@ -13,7 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//litert/build_common:litert_build_defs.bzl", "litert_dynamic_lib", "litert_lib", "litert_test")
+load("//litert/build_common:litert_build_defs.bzl", "litert_dynamic_lib", "windows_dll_library", "litert_lib", "litert_test")
+load(
+    "//tflite:build_def.bzl",
+    "tflite_cc_library_with_c_headers_test",
+    "tflite_cc_shared_object",
+    "tflite_copts",
+    "tflite_copts_warnings",
+    "tflite_custom_c_library",
+    "tflite_linkopts_no_undefined",
+    "tflite_self_contained_libs_test_suite",
+)
+
+load("//tflite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite_with_c_headers_test")
 
 package(
     # copybara:uncomment default_applicable_licenses = ["@org_tensorflow//tensorflow:license"],
@@ -32,13 +44,62 @@ litert_dynamic_lib(
         "//litert/vendors/c:litert_compiler_plugin.h",
     ],
     export_litert_only = True,
-    shared_lib_name = "intel_openvino_compiler_plugin_so",
-    so_name = "libLiteRtCompilerPlugin_IntelOpenvino.so",
+    shared_lib_name = "intel_openvino_compiler_plugin",
+    so_name = "LiteRtCompilerPlugin_IntelOpenvino",
     tags = [
         "nobuilder",
         "notap",
     ],
     ungrte = True,
+    visibility = ["//litert:__subpackages__"],
+    deps = [
+        ":graph_iterator",
+        "//litert/c:litert_common",
+        "//litert/c:litert_dispatch_headers",
+        "//litert/c:litert_op_code",
+        "//litert/cc:litert_expected",
+        "//litert/cc:litert_macros",
+        "//litert/cc:litert_model",
+    ] + select({
+        ":openvino_native_dir_set": ["@intel_openvino//:openvino"],
+        "//conditions:default": [],
+    }),
+)
+
+tflite_cc_shared_object(
+    name = "libLiteRtCompilerPlugin",
+    srcs = ["openvino_compiler_plugin.cc"],
+    per_os_targets = True,
+    deps = [
+        ":graph_iterator",
+        "//litert/c:litert_common",
+        "//litert/c:litert_dispatch_headers",
+        "//litert/c:litert_op_code",
+        "//litert/cc:litert_expected",
+        "//litert/cc:litert_macros",
+        "//litert/cc:litert_model",
+        ":litert_compiler_plugin_c_api"
+    ] + select({
+        ":openvino_native_dir_set": ["@intel_openvino//:openvino"],
+        "//conditions:default": [],
+    }),
+)
+
+cc_library_with_tflite_with_c_headers_test(
+    name = "litert_compiler_plugin_c_api",
+    hdrs = [
+        "//litert/vendors/c:litert_compiler_plugin.h",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
+)
+
+windows_dll_library(
+    name = "openvino_compiler_plugin_testing",
+    srcs = ["openvino_compiler_plugin.cc"],
+    hdrs = [
+        "//litert/vendors/c:litert_compiler_plugin.h",
+    ],
     visibility = ["//litert:__subpackages__"],
     deps = [
         ":graph_iterator",

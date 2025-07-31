@@ -14,6 +14,18 @@
 # limitations under the License.
 
 load("//litert/build_common:litert_build_defs.bzl", "litert_dynamic_lib")
+load(
+    "//tflite:build_def.bzl",
+    "tflite_cc_library_with_c_headers_test",
+    "tflite_cc_shared_object",
+    "tflite_copts",
+    "tflite_copts_warnings",
+    "tflite_custom_c_library",
+    "tflite_linkopts_no_undefined",
+    "tflite_self_contained_libs_test_suite",
+)
+
+load("//tflite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite_with_c_headers_test")
 
 package(
     # copybara:uncomment default_applicable_licenses = ["@org_tensorflow//tensorflow:license"],
@@ -76,6 +88,58 @@ litert_dynamic_lib(
         ":openvino_native_dir_set": ["@intel_openvino//:openvino"],
         "//conditions:default": [],
     }),
+)
+
+tflite_cc_shared_object(
+    name = "libLiteRtDispatch",
+    srcs = [
+        "device_context.cc",
+        "dispatch_api.cc",
+        "invocation_context.cc",
+    ],
+    copts = [
+        "-Os",
+        "-fno-exceptions",
+        "-fno-unwind-tables",
+        "-fno-asynchronous-unwind-tables",
+        "-ffunction-sections",
+        "-fdata-sections",
+    ],
+    per_os_targets = True,
+    tags = [
+        "nobuilder",
+        "notap",
+    ],
+    visibility = ["//litert:__subpackages__"],
+    deps = [
+        "//litert/c:litert_common",
+        "//litert/c:litert_logging",
+        "//litert/c:litert_model",
+        "//litert/c:litert_tensor_buffer",
+        "//litert/cc:litert_element_type",
+        "//litert/cc:litert_environment_options",
+        "//litert/cc:litert_expected",
+        "//litert/cc:litert_model",
+        "//litert/core/util:tensor_type_util",
+        "//litert/vendors/c:litert_dispatch_c_api",
+        "//litert/vendors/intel_openvino:ov_utils",
+        "@com_google_absl//absl/cleanup",
+        ":litert_dispatch_api",
+    ] + select({
+        ":openvino_native_dir_set": ["@intel_openvino//:openvino"],
+        "//conditions:default": [],
+    }),
+)
+
+cc_library_with_tflite_with_c_headers_test(
+    name = "litert_dispatch_api",
+    hdrs = [
+        #"//litert/vendors/c:litert_compiler_plugin.h",
+        "device_context.h",
+        "invocation_context.h",
+    ],
+    copts = tflite_copts(),
+    generate_opaque_delegate_target = True,
 )
 
 #Test targets for Openvino Dispatch

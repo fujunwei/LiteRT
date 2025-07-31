@@ -142,6 +142,7 @@ LiteRtStatus LiteRtGetNumCompilerPluginSupportedSocModels(
     return kLiteRtStatusErrorInvalidArgument;
   }
   *num_supported_soc_models = kNumPluginSocModels;
+  // Testing();
   return kLiteRtStatusOk;
 }
 

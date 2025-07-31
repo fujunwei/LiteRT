@@ -60,9 +60,12 @@ selects.config_setting_group(
 exports_files(srcs = [
     "export_litert_only_darwin.lds",
     "export_litert_only_linux.lds",
+    "export_litert_only_windows.lds",
     "export_litert_runtime_only_darwin.lds",
+    "export_litert_runtime_only_windows.lds",
     "export_litert_runtime_only_linux.lds",
     "export_litert_tflite_runtime_darwin.lds",
+    "export_litert_tflite_runtime_windows.lds",
     "export_litert_tflite_runtime_linux.lds",
 ])
 

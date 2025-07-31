@@ -31,46 +31,54 @@ LITERT_DEFINE_HANDLE(LiteRtCompilerPlugin);
 // Artifact produced from compiling a selected partition of ops.
 LITERT_DEFINE_HANDLE(LiteRtCompiledResult);
 
+//  #ifdef BUILD_MY_DLL // Define this when compiling the DLL
+    #define MY_DLL_EXPORT __declspec(dllexport)
+    // #else
+    // #define MY_DLL_EXPORT __declspec(dllimport)
+    // #endif
+
 //
 // Plugin
 //
 
-LiteRtStatus LiteRtGetCompilerPluginVersion(LiteRtApiVersion* api_version);
+MY_DLL_EXPORT LiteRtStatus LiteRtGetCompilerPluginVersion(LiteRtApiVersion* api_version);
 
 // Name associated with the manufacturer this plugin relates to (e.g,
 // GoogleTensor, Qualcomm).
-const char* LiteRtGetCompilerPluginSocManufacturer();
+MY_DLL_EXPORT const char* LiteRtGetCompilerPluginSocManufacturer();
+
+__declspec(dllexport) void Testing();
 
 // Initialize a compiler plugin with options provided by ther caller. The caller
 // retains ownership of `env` and `options` and guarantees pointers are valid
 // while the plugin is alive. These are read-only (TODO: update api for const
 // correctness). It is OK for these to be null, in which case the plugin should
 // use default values.
-LiteRtStatus LiteRtCreateCompilerPlugin(LiteRtCompilerPlugin* compiler_plugin,
+MY_DLL_EXPORT LiteRtStatus LiteRtCreateCompilerPlugin(LiteRtCompilerPlugin* compiler_plugin,
                                         LiteRtEnvironmentOptions env,
                                         LiteRtOptions options);
 
-void LiteRtDestroyCompilerPlugin(LiteRtCompilerPlugin compiler_plugin);
+MY_DLL_EXPORT void LiteRtDestroyCompilerPlugin(LiteRtCompilerPlugin compiler_plugin);
 
 // Return the HW supported by this plugin (e.g., GPU, NPU)
-LiteRtStatus LiteRtGetCompilerPluginSupportedHardware(
+MY_DLL_EXPORT LiteRtStatus LiteRtGetCompilerPluginSupportedHardware(
     LiteRtCompilerPlugin compiler_plugin,
     LiteRtHwAccelerators* supported_hardware);
 
 // Number of SoC models supported by this plugin.
-LiteRtStatus LiteRtGetNumCompilerPluginSupportedSocModels(
+MY_DLL_EXPORT LiteRtStatus LiteRtGetNumCompilerPluginSupportedSocModels(
     LiteRtCompilerPlugin compiler_plugin,
     LiteRtParamIndex* num_supported_soc_models);
 
 // Gets the name of the SoC model at the given index. The memory
 // associated with the returned name is owned by the plugin.
-LiteRtStatus LiteRtGetCompilerPluginSupportedSocModel(
+MY_DLL_EXPORT LiteRtStatus LiteRtGetCompilerPluginSupportedSocModel(
     LiteRtCompilerPlugin compiler_plugin, LiteRtParamIndex soc_model_idx,
     const char** soc_model_name);
 
 // Select desired ops for compilation. This will only be called once
 // per subgraph, plugins should select all supportable ops.
-LiteRtStatus LiteRtCompilerPluginPartition(LiteRtCompilerPlugin compiler_plugin,
+MY_DLL_EXPORT LiteRtStatus LiteRtCompilerPluginPartition(LiteRtCompilerPlugin compiler_plugin,
                                            const char* soc_model,
                                            LiteRtSubgraph subgraph,
                                            LiteRtOpList selected_ops);
@@ -78,7 +86,7 @@ LiteRtStatus LiteRtCompilerPluginPartition(LiteRtCompilerPlugin compiler_plugin,
 // Prepare result to pass to the runtime for given model containing partitioned
 // subgraphs. Optionally, handles a SoC model (parameter `soc_model` can be NULL
 // to specify a default SoC model).
-LiteRtStatus LiteRtCompilerPluginCompile(LiteRtCompilerPlugin compiler_plugin,
+MY_DLL_EXPORT LiteRtStatus LiteRtCompilerPluginCompile(LiteRtCompilerPlugin compiler_plugin,
                                          const char* soc_model,
                                          LiteRtModel partitions,
                                          LiteRtCompiledResult* compiled_result);
@@ -86,20 +94,20 @@ LiteRtStatus LiteRtCompilerPluginCompile(LiteRtCompilerPlugin compiler_plugin,
 // Compiled Partition
 //
 
-void LiteRtDestroyCompiledResult(LiteRtCompiledResult result);
+MY_DLL_EXPORT void LiteRtDestroyCompiledResult(LiteRtCompiledResult result);
 
 // Get the buffer for the compiled byte code for the given index.
-LiteRtStatus LiteRtGetCompiledResultByteCode(
+MY_DLL_EXPORT LiteRtStatus LiteRtGetCompiledResultByteCode(
     LiteRtCompiledResult compiled_result, LiteRtParamIndex byte_code_idx,
     const void** byte_code, size_t* byte_code_size);
 
 // The number of individual byte code modules.
-LiteRtStatus LiteRtCompiledResultNumByteCodeModules(
+MY_DLL_EXPORT LiteRtStatus LiteRtCompiledResultNumByteCodeModules(
     LiteRtCompiledResult compiled_result, LiteRtParamIndex* num_byte_code);
 
 // Get per-op info related to a particular compiled partition as well as the
 // index of the respective byte code buffer.
-LiteRtStatus LiteRtGetCompiledResultCallInfo(
+MY_DLL_EXPORT LiteRtStatus LiteRtGetCompiledResultCallInfo(
     LiteRtCompiledResult compiled_result, LiteRtParamIndex call_idx,
     const void** call_info, size_t* call_info_size,
     LiteRtParamIndex* byte_code_idx);
@@ -107,7 +115,7 @@ LiteRtStatus LiteRtGetCompiledResultCallInfo(
 // Get the number of calls that will be made to the HAL for this graph.
 // This should equal the number of partitions given for compilation which
 // is equal to the number of custom ops in the final model.
-LiteRtStatus LiteRtGetNumCompiledResultCalls(
+MY_DLL_EXPORT LiteRtStatus LiteRtGetNumCompiledResultCalls(
     LiteRtCompiledResult compiled_result, LiteRtParamIndex* num_calls);
 
 #ifdef __cplusplus
