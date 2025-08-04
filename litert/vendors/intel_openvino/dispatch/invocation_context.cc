@@ -47,7 +47,7 @@ LiteRtDispatchInvocationContextT::Create(
     return litert::Error(kLiteRtStatusErrorRuntimeFailure,
                          "Failed to get OpenVINO core from device context");
   }
-  ov::CompiledModel compiled_model = core->import_model(model_stream, "NPU");
+  ov::CompiledModel compiled_model = core->import_model(model_stream, "CPU");
   auto infer_request = compiled_model.create_infer_request();
   LITERT_LOG(LITERT_INFO, "Openvino InvocationContext Initialize SUCCESS");
   // TODO: add support for loading cached model
@@ -59,8 +59,7 @@ litert::Expected<LiteRtTensorBufferRequirements>
 LiteRtDispatchInvocationContextT::GetTensorBufferRequirements(
     const LiteRtRankedTensorType &tensor_type) {
   LiteRtTensorBufferType supported_tensor_buffer_types[] = {
-      kLiteRtTensorBufferTypeAhwb,
-      kLiteRtTensorBufferTypeDmaBuf,
+      kLiteRtTensorBufferTypeHostMemory,
   };
 
   int num_supported_tensor_buffer_types =
@@ -98,7 +97,7 @@ LiteRtDispatchInvocationContextT::GetOutputRequirements(
 litert::Expected<void> LiteRtDispatchInvocationContextT::AttachInput(
     int graph_input_index, LiteRtTensorBufferHandle tensor_buffer_handle) {
   LITERT_ASSIGN_OR_RETURN(
-      ov::RemoteTensor remote_tensor,
+      ov::Tensor remote_tensor,
       device_context_.getRemoteTensor(tensor_buffer_handle));
   // TODO: visit this if need to maintain graph indices for inputs and outputs
   // in dispatch_api
@@ -109,7 +108,7 @@ litert::Expected<void> LiteRtDispatchInvocationContextT::AttachInput(
 litert::Expected<void> LiteRtDispatchInvocationContextT::AttachOutput(
     int graph_output_index, LiteRtTensorBufferHandle tensor_buffer_handle) {
   LITERT_ASSIGN_OR_RETURN(
-      ov::RemoteTensor remote_tensor,
+      ov::Tensor remote_tensor,
       device_context_.getRemoteTensor(tensor_buffer_handle));
   // TODO: visit this if need to maintain graph indices for inputs and outputs
   // in dispatch_api

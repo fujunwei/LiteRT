@@ -172,6 +172,17 @@ class BenchmarkLiteRtModel : public BenchmarkModel {
       signature = sig.Key();
     }
     if (compiled_model_->Run(signature, *input_buffers_, *output_buffers_)) {
+      constexpr const size_t kTestOutput0Size =  24;
+      std::vector<float> output_data(kTestOutput0Size);
+       (*output_buffers_)[0].Read<float>(
+        absl::MakeSpan(output_data.data(), kTestOutput0Size));
+      static bool is_print = false;
+      if (!is_print) {
+        is_print = true;
+        for (float data : output_data) {
+          printf("========benchmark===%f", data);
+        }
+      }
       return kTfLiteOk;
     } else {
       LITERT_LOG(LITERT_ERROR, "Run failed");

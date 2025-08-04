@@ -38,7 +38,7 @@ class LiteRtDispatchDeviceContextT {
   litert::Expected<void> UnregisterTensorBuffer(
       LiteRtTensorBufferHandle tensor_buffer_handle);
 
-  litert::Expected<ov::RemoteTensor> getRemoteTensor(
+  litert::Expected<ov::Tensor> getRemoteTensor(
       const LiteRtTensorBufferHandle& handle) const {
     auto it = tensor_handle_map_.find(handle);
     if (it != tensor_handle_map_.end()) {
@@ -56,7 +56,7 @@ class LiteRtDispatchDeviceContextT {
   explicit LiteRtDispatchDeviceContextT()
       : core_(std::make_shared<ov::Core>()), next_handle_(0) {}
   std::shared_ptr<ov::Core> core_;
-  std::unordered_map<LiteRtTensorBufferHandle, ov::RemoteTensor>
+  std::unordered_map<LiteRtTensorBufferHandle, ov::Tensor>
       tensor_handle_map_;
   uint64_t next_handle_;
 };

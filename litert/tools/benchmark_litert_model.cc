@@ -160,6 +160,17 @@ TfLiteStatus BenchmarkLiteRtModel::Init() {
   input_buffers_ = std::make_unique<std::vector<litert::TensorBuffer>>(
       std::move(input_buffers_result));
 
+  // Add input for reshape {2, 3, 4} to {4, 3, 2}.
+  constexpr const float kTestInput0Tensor[] = {
+      1, 2, 3, 4, 5, 6,
+      1, 2, 3, 4, 5, 6,
+      1, 2, 3, 4, 5, 6,
+      1, 2, 3, 4, 5, 6,};
+  constexpr const size_t kTestInput0Size =
+    sizeof(kTestInput0Tensor) / sizeof(kTestInput0Tensor[0]);
+  (*input_buffers_)[0].Write<float>(
+      absl::MakeConstSpan(kTestInput0Tensor, kTestInput0Size));
+
   LITERT_ASSIGN_OR_RETURN(
       auto output_buffers_result,
       compiled_model_->CreateOutputBuffers(signature),

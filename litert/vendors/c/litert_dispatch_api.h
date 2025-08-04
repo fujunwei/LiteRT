@@ -25,6 +25,12 @@
 extern "C" {
 #endif  // __cplusplus
 
+//  #ifdef BUILD_MY_DLL // Define this when compiling the DLL
+    #define MY_DLL_EXPORT __declspec(dllexport)
+    // #else
+    // #define MY_DLL_EXPORT __declspec(dllimport)
+    // #endif
+
 // /////////////////////////////////////////////////////////////////////////////
 
 typedef LiteRtStatus (*LiteRtDispatchInitializeT)(
@@ -233,7 +239,7 @@ typedef struct LiteRtDispatchApi {
   LiteRtDispatchGraphInterface* graph_interface;
 } LiteRtDispatchApi;
 
-LiteRtStatus LiteRtDispatchGetApi(LiteRtDispatchApi* api);
+MY_DLL_EXPORT LiteRtStatus LiteRtDispatchGetApi(LiteRtDispatchApi* api);
 
 #ifdef __cplusplus
 }

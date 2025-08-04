@@ -515,10 +515,10 @@ Expected<void> LiteRtCompiledModelT::RegisterBuffer(
   LITERT_DEBUG_CODE({
     absl::string_view io = is_input ? "input" : "output";
     auto buffer_type = litert::BufferTypeToString(buffer->buffer_type());
-    LITERT_LOG(LITERT_DEBUG,
-               "Registering %s tensor from TfliteTensor %p to "
-               "LiteRtTensorBuffer %p of type %s",
-               io.data(), tensor, buffer, buffer_type.data());
+    // LITERT_LOG(LITERT_DEBUG,
+    //            "Registering %s tensor from TfliteTensor %p to "
+    //            "LiteRtTensorBuffer %p of type %s",
+    //            io.data(), tensor, buffer, buffer_type.data());
   });
 
   // Automatic shape detection for input tensors.

@@ -131,7 +131,7 @@ LiteRtStatus LiteRtGetCompilerPluginSupportedHardware(
   if (!compiler_plugin || !supported_hardware) {
     return kLiteRtStatusErrorInvalidArgument;
   }
-  *supported_hardware = kLiteRtHwAcceleratorNpu;
+  *supported_hardware = kLiteRtHwAcceleratorCpu;
   return kLiteRtStatusOk;
 }
 
@@ -288,7 +288,7 @@ LiteRtStatus LiteRtCompilerPluginCompile(
       auto model = tflite_fe->convert(input_model);
 
       // TODO: pass the device string from env options
-      std::string device = "NPU";
+      std::string device = "CPU";
       std::ostringstream oss;
       auto compiled_model = core.compile_model(model, device);
       compiled_model.export_model(oss);
