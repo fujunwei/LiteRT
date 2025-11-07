@@ -402,7 +402,7 @@ LiteRtStatus LiteRtCompilerPluginCompile(
 
         // Use device and configs_map from Intel OpenVINO options
         std::ostringstream oss;
-        auto compiled_model = core.compile_model(model, device, configs_map);
+        auto compiled_model = core.compile_model(model, "CPU", configs_map);
         compiled_model.export_model(oss);
         LITERT_LOG(LITERT_INFO, "Model export done");
         result->byte_code[partition_idx] = oss.str();
