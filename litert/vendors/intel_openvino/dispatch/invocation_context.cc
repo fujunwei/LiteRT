@@ -142,51 +142,57 @@ litert::Expected<void> LiteRtDispatchInvocationContextT::AttachOutput(
 }
 
 litert::Expected<void> LiteRtDispatchInvocationContextT::Invoke() {
-  // for (auto& tensor_buffer_handle : input_tensor_buffer_handles_) {
-  //   LITERT_ASSIGN_OR_RETURN(LiteRtTensorBuffer tensor_buffer,
-  //                         device_context_.getTensorBuffer(tensor_buffer_handle));
+#if define(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
+  for (auto& tensor_buffer_handle : input_tensor_buffer_handles_) {
+    LITERT_ASSIGN_OR_RETURN(LiteRtTensorBuffer tensor_buffer,
+                          device_context_.getTensorBuffer(tensor_buffer_handle));
 
-  //   size_t tensor_buffer_size;
-  //   LITERT_RETURN_IF_ERROR(
-  //       LiteRtGetTensorBufferSize(tensor_buffer, &tensor_buffer_size),
-  //       litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
-  //                         "Failed to get tensor buffer size"));
-  //   // LITERT_LOG(LITERT_ERROR, "========%d ", tensor_buffer_size);
-  //   void* buffer_host_addr;
-  //     LITERT_RETURN_IF_ERROR(
-  //         LiteRtGetTensorBufferHostMemory(tensor_buffer, &buffer_host_addr),
-  //         litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
-  //                            "Failed to get HostMemory buffer"));
+    size_t tensor_buffer_size;
+    LITERT_RETURN_IF_ERROR(
+        LiteRtGetTensorBufferSize(tensor_buffer, &tensor_buffer_size),
+        litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
+                          "Failed to get tensor buffer size"));
+    // LITERT_LOG(LITERT_ERROR, "========%d ", tensor_buffer_size);
+    void* buffer_host_addr;
+      LITERT_RETURN_IF_ERROR(
+          LiteRtGetTensorBufferHostMemory(tensor_buffer, &buffer_host_addr),
+          litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
+                             "Failed to get HostMemory buffer"));
 
-  //   LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
-  //                         device_context_.getOvTensor(tensor_buffer_handle));
-  //   memcpy(ov_tensor.data(), buffer_host_addr, tensor_buffer_size);
-  // }
+    LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
+                          device_context_.getOvTensor(tensor_buffer_handle));
+    memcpy(ov_tensor.data(), buffer_host_addr, tensor_buffer_size);
+  }
+#endif
+
   infer_request_.start_async();
   if (!infer_request_.wait_for(
           std::chrono::milliseconds(kInferRequestTimeoutMs)))
     return litert::Unexpected(
         kLiteRtStatusErrorRuntimeFailure,
         "Failed to execute inference request due to timeout");
-  // for (auto& tensor_buffer_handle : output_tensor_buffer_handles_) {
-  //   LITERT_ASSIGN_OR_RETURN(LiteRtTensorBuffer tensor_buffer,
-  //                         device_context_.getTensorBuffer(tensor_buffer_handle));
 
-  //   size_t tensor_buffer_size;
-  //   LITERT_RETURN_IF_ERROR(
-  //       LiteRtGetTensorBufferSize(tensor_buffer, &tensor_buffer_size),
-  //       litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
-  //                         "Failed to get tensor buffer size"));
-  //   // LITERT_LOG(LITERT_ERROR, "========%d ", tensor_buffer_size);
-  //   void* buffer_host_addr;
-  //     LITERT_RETURN_IF_ERROR(
-  //         LiteRtGetTensorBufferHostMemory(tensor_buffer, &buffer_host_addr),
-  //         litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
-  //                            "Failed to get HostMemory buffer"));
+#if define(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
+  for (auto& tensor_buffer_handle : output_tensor_buffer_handles_) {
+    LITERT_ASSIGN_OR_RETURN(LiteRtTensorBuffer tensor_buffer,
+                          device_context_.getTensorBuffer(tensor_buffer_handle));
 
-  //   LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
-  //                         device_context_.getOvTensor(tensor_buffer_handle));
-  //   memcpy(buffer_host_addr, ov_tensor.data(), tensor_buffer_size);
-  // }
+    size_t tensor_buffer_size;
+    LITERT_RETURN_IF_ERROR(
+        LiteRtGetTensorBufferSize(tensor_buffer, &tensor_buffer_size),
+        litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
+                          "Failed to get tensor buffer size"));
+    // LITERT_LOG(LITERT_ERROR, "========%d ", tensor_buffer_size);
+    void* buffer_host_addr;
+      LITERT_RETURN_IF_ERROR(
+          LiteRtGetTensorBufferHostMemory(tensor_buffer, &buffer_host_addr),
+          litert::Unexpected(kLiteRtStatusErrorRuntimeFailure,
+                             "Failed to get HostMemory buffer"));
+
+    LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
+                          device_context_.getOvTensor(tensor_buffer_handle));
+    memcpy(buffer_host_addr, ov_tensor.data(), tensor_buffer_size);
+  }
+#endif
   return {};
 }

@@ -34,6 +34,8 @@
 #include "litert/cc/litert_macros.h"
 #include "litert/vendors/c/litert_dispatch.h"
 
+#define COPY_INPUT_OUTPUT_BUFFER_MANUALLY 1
+
 class LiteRtDispatchDeviceContextT {
  public:
   using Ptr = std::unique_ptr<LiteRtDispatchDeviceContextT>;

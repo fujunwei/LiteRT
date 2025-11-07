@@ -135,10 +135,14 @@ LiteRtDispatchDeviceContextT::RegisterTensorBuffer(
       for (int i = 0; i < ov_shape_vec.size(); i++)
         ov_shape_vec[i] = tensor_type.layout.dimensions[i];
 
+#if define(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
+      ov::Tensor ov_tensor(ov_element_type,
+                           ov::Shape{ov_shape_vec.begin(), ov_shape_vec.end()});
+#else
       ov::Tensor ov_tensor(ov_element_type,
                            ov::Shape{ov_shape_vec.begin(), ov_shape_vec.end()},
                            buffer_host_addr);
-
+#endif
       tensor_handle_map_.emplace((LiteRtTensorBufferHandle)next_handle_,
                                  ov_tensor);
       tensor_handle_buffer_map_.emplace((LiteRtTensorBufferHandle)next_handle_,
