@@ -142,7 +142,7 @@ litert::Expected<void> LiteRtDispatchInvocationContextT::AttachOutput(
 }
 
 litert::Expected<void> LiteRtDispatchInvocationContextT::Invoke() {
-#if define(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
+#if defined(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
   for (auto& tensor_buffer_handle : input_tensor_buffer_handles_) {
     LITERT_ASSIGN_OR_RETURN(LiteRtTensorBuffer tensor_buffer,
                           device_context_.getTensorBuffer(tensor_buffer_handle));
@@ -172,7 +172,7 @@ litert::Expected<void> LiteRtDispatchInvocationContextT::Invoke() {
         kLiteRtStatusErrorRuntimeFailure,
         "Failed to execute inference request due to timeout");
 
-#if define(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
+#if defined(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
   for (auto& tensor_buffer_handle : output_tensor_buffer_handles_) {
     LITERT_ASSIGN_OR_RETURN(LiteRtTensorBuffer tensor_buffer,
                           device_context_.getTensorBuffer(tensor_buffer_handle));

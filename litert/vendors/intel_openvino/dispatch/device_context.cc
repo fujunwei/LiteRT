@@ -135,7 +135,7 @@ LiteRtDispatchDeviceContextT::RegisterTensorBuffer(
       for (int i = 0; i < ov_shape_vec.size(); i++)
         ov_shape_vec[i] = tensor_type.layout.dimensions[i];
 
-#if define(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
+#if defined(COPY_INPUT_OUTPUT_BUFFER_MANUALLY)
       ov::Tensor ov_tensor(ov_element_type,
                            ov::Shape{ov_shape_vec.begin(), ov_shape_vec.end()});
 #else
