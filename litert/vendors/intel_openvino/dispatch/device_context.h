@@ -36,6 +36,7 @@
 
 #if defined(LITERT_WINDOWS_OS)
 #include "litert/vendors/intel_openvino/dispatch/openvino_shared_core.h"
+#include "litert/vendors/intel_openvino/dispatch/remote_tensor_buffer.h"
 #endif  // LITERT_WINDOWS_OS
 
 class LiteRtDispatchDeviceContextT {
@@ -51,7 +52,11 @@ class LiteRtDispatchDeviceContextT {
       LiteRtTensorBufferHandle tensor_buffer_handle);
 
 #if defined(LITERT_WINDOWS_OS)
+#ifdef LITERT_CPU_DEVICE
+  litert::Expected<ov::Tensor> getOvTensor(
+#else
   litert::Expected<ov::intel_npu::level_zero::ZeroBufferTensor> getOvTensor(
+#endif
 #else
   litert::Expected<ov::Tensor> getOvTensor(
 #endif
@@ -77,9 +82,13 @@ class LiteRtDispatchDeviceContextT {
  private:
 #if defined(LITERT_WINDOWS_OS)
   explicit LiteRtDispatchDeviceContextT() : next_handle_(0) {}
+#ifdef LITERT_CPU_DEVICE
+  std::unordered_map<LiteRtTensorBufferHandle, ov::Tensor> tensor_handle_map_;
+#else
   std::unordered_map<LiteRtTensorBufferHandle,
                      ov::intel_npu::level_zero::ZeroBufferTensor>
       tensor_handle_map_;
+#endif
 #else
   explicit LiteRtDispatchDeviceContextT()
       : core_(std::make_shared<ov::Core>()), next_handle_(0) {}

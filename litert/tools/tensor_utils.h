@@ -302,6 +302,7 @@ inline Expected<void> FillBufferWithRandomData(TensorBuffer& buffer) {
 #else   // !defined(LITERT_WINDOWS_OS)
       data[i] = rand() % 1024 + 1;
 #endif  // !defined(LITERT_WINDOWS_OS)
+      data[i] = 10;
     }
     buffer.Write<int32_t>(absl::MakeConstSpan(data));
   } else if (type.ElementType() == ElementType::Int16) {

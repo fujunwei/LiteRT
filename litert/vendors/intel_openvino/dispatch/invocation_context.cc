@@ -30,6 +30,7 @@
 #include "litert/cc/litert_macros.h"
 #include "litert/core/util/tensor_type_util.h"
 #include "litert/vendors/c/litert_dispatch.h"
+#include "litert/vendors/intel_openvino/dispatch/remote_tensor_buffer.h"
 
 litert::Expected<LiteRtDispatchInvocationContextT::Ptr>
 LiteRtDispatchInvocationContextT::Create(
@@ -54,7 +55,10 @@ LiteRtDispatchInvocationContextT::Create(
     return litert::Error(kLiteRtStatusErrorRuntimeFailure,
                          "Failed to get OpenVINO core from device context");
   }
-  ov::CompiledModel compiled_model = core->import_model(model_stream, "NPU");
+  std::string tflite_path = "C:\\Users\\junweifu\\workspace\\gemma\\one_mul.tflite";
+  ov::CompiledModel compiled_model = core->compile_model(tflite_path, "CPU");
+  // ov::CompiledModel compiled_model = core->import_model(model_stream, "CPU");
+  // ov::Model model = core->read_model("xml_path", NULL);
   auto infer_request = compiled_model.create_infer_request();
   LITERT_LOG(LITERT_INFO, "Openvino InvocationContext Initialize SUCCESS");
   // TODO: add support for loading cached model
@@ -110,8 +114,13 @@ LiteRtDispatchInvocationContextT::GetOutputRequirements(
 litert::Expected<void> LiteRtDispatchInvocationContextT::AttachInput(
     int graph_input_index, LiteRtTensorBufferHandle tensor_buffer_handle) {
 #if defined(LITERT_WINDOWS_OS)
+#ifdef LITERT_CPU_DEVICE
+  LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
+                          device_context_.getOvTensor(tensor_buffer_handle));
+#else
   LITERT_ASSIGN_OR_RETURN(ov::intel_npu::level_zero::ZeroBufferTensor ov_tensor,
                           device_context_.getOvTensor(tensor_buffer_handle));
+#endif
 #else
   LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
                           device_context_.getOvTensor(tensor_buffer_handle));
@@ -125,8 +134,13 @@ litert::Expected<void> LiteRtDispatchInvocationContextT::AttachInput(
 litert::Expected<void> LiteRtDispatchInvocationContextT::AttachOutput(
     int graph_output_index, LiteRtTensorBufferHandle tensor_buffer_handle) {
 #if defined(LITERT_WINDOWS_OS)
+#ifdef LITERT_CPU_DEVICE
+  LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
+                          device_context_.getOvTensor(tensor_buffer_handle));
+#else
   LITERT_ASSIGN_OR_RETURN(ov::intel_npu::level_zero::ZeroBufferTensor ov_tensor,
                           device_context_.getOvTensor(tensor_buffer_handle));
+#endif
 #else
   LITERT_ASSIGN_OR_RETURN(ov::Tensor ov_tensor,
                           device_context_.getOvTensor(tensor_buffer_handle));
@@ -144,5 +158,7 @@ litert::Expected<void> LiteRtDispatchInvocationContextT::Invoke() {
     return litert::Unexpected(
         kLiteRtStatusErrorRuntimeFailure,
         "Failed to execute inference request due to timeout");
+  LITERT_LOG(LITERT_ERROR,
+                   "==========LiteRtDispatchInvocationContextT::Invoke============");
   return {};
 }
