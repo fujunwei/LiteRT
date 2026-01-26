@@ -296,7 +296,7 @@ inline Expected<void> FillBufferWithRandomData(TensorBuffer& buffer) {
     std::vector<int32_t> data(total_elements);
     unsigned int seed = 7;
     for (size_t i = 0; i < total_elements; ++i) {
-      data[i] = rand_r(&seed) % 1024 + 1;
+      data[i] = 10;
     }
     buffer.Write<int32_t>(absl::MakeConstSpan(data));
   } else if (type.ElementType() == ElementType::Int16) {

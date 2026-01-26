@@ -21,6 +21,8 @@
 #include "litert/c/litert_model_types.h"
 #include "litert/cc/litert_expected.h"
 
+#define LITERT_CPU_DEVICE
+
 class RemoteTensorBuffer {
  public:
   RemoteTensorBuffer(const RemoteTensorBuffer&) = delete;
@@ -36,11 +38,16 @@ class RemoteTensorBuffer {
 
   litert::Expected<void*> GetZeroBufferPtr();
 
+#ifdef LITERT_CPU_DEVICE
+  litert::Expected<ov::Tensor> GetZeroBufferTensor();
+#else
   litert::Expected<ov::intel_npu::level_zero::ZeroBufferTensor>
   GetZeroBufferTensor();
+#endif
 
  private:
   ov::intel_npu::level_zero::ZeroBufferTensor level_zero_buffer_;
+  ov::Tensor host_tensor_;
   bool allocated_;
 };
 
